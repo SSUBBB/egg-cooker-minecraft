@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>에그쿠커 서버 설명서</title>
+<meta name="description" content="친구용 RPG 모드 서버 접속 안내 — Prism Launcher로 모드팩 설치부터 전투·보스 사냥 사용법까지." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Silkscreen&family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" />
+
+<style>
+  :root {
+    --bg: #f6f1ec;
+    --surface: #ffffff;
+    --surface-2: #efe6dc;
+    --ink: #241c15;
+    --muted: #6b5e50;
+    --line: #e3d8ca;
+    --accent: #b1591f;
+    --accent-ink: #fff8f0;
+    --accent-soft: #f3e3d3;
+    --warn: #9a5a12;
+    --warn-soft: #f6ebda;
+    --bevel-light: rgba(255, 255, 255, 0.7);
+    --bevel-dark: rgba(0, 0, 0, 0.16);
+    --shadow: 0 1px 2px rgba(36, 28, 21, 0.07), 0 8px 24px -12px rgba(36, 28, 21, 0.2);
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #17130f;
+      --surface: #221b14;
+      --surface-2: #2b231a;
+      --ink: #efe6db;
+      --muted: #ad9c89;
+      --line: #3a3025;
+      --accent: #e2935c;
+      --accent-ink: #1c1109;
+      --accent-soft: #362518;
+      --warn: #d79a4e;
+      --warn-soft: #2e2616;
+      --bevel-light: rgba(255, 255, 255, 0.08);
+      --bevel-dark: rgba(0, 0, 0, 0.38);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #17130f;
+    --surface: #221b14;
+    --surface-2: #2b231a;
+    --ink: #efe6db;
+    --muted: #ad9c89;
+    --line: #3a3025;
+    --accent: #e2935c;
+    --accent-ink: #1c1109;
+    --accent-soft: #362518;
+    --warn: #d79a4e;
+    --warn-soft: #2e2616;
+    --bevel-light: rgba(255, 255, 255, 0.08);
+    --bevel-dark: rgba(0, 0, 0, 0.38);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 30px -14px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    line-height: 1.6;
+    word-break: keep-all;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── top bar ── */
+  .topbar {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: clamp(32px, 6vw, 56px) 22px 28px;
+    border-bottom: 1px solid var(--line);
+  }
+  .eyebrow {
+    font-family: "Silkscreen", "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 16px;
+  }
+  h1 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.8rem, 5vw, 2.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    margin: 0 0 12px;
+  }
+  .lede {
+    font-size: 1.05rem;
+    color: var(--muted);
+    max-width: 64ch;
+    margin: 0;
+  }
+
+  /* ── shell: sidebar + content ── */
+  .shell {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 22px 64px;
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+  }
+
+  .sidebar {
+    flex: 0 0 190px;
+    position: sticky;
+    top: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .side-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+  .side-group { display: flex; flex-direction: column; }
+  .side-links { display: flex; flex-direction: column; gap: 2px; }
+  .side-link {
+    font: inherit;
+    font-size: 0.92rem;
+    font-weight: 500;
+    text-align: left;
+    color: var(--muted);
+    background: none;
+    border: none;
+    border-radius: 7px;
+    padding: 7px 10px;
+    cursor: pointer;
+  }
+  .side-link:hover { color: var(--ink); }
+  .side-link:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+  .side-link[aria-current="page"] {
+    color: var(--accent-ink);
+    background: var(--accent);
+    font-weight: 600;
+  }
+
+  .content {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: 700px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    padding: clamp(20px, 4vw, 34px);
+  }
+  .page { display: flex; flex-direction: column; gap: 28px; }
+
+  @media (max-width: 760px) {
+    .shell { flex-direction: column; gap: 20px; }
+    .sidebar {
+      position: static;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      gap: 16px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+      width: 100%;
+    }
+    .side-label { display: none; }
+    .side-links { flex-direction: row; gap: 4px; }
+    .side-link { white-space: nowrap; }
+    .content { max-width: 100%; }
+  }
+
+  /* ── server address slot ── */
+  .slot {
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 20px 18px;
+  }
+  .slot-label {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 0 0 10px;
+  }
+  .slot-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .addr {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: clamp(0.95rem, 3.4vw, 1.15rem);
+    font-weight: 500;
+    color: var(--ink);
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 9px 12px;
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+  .copy {
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border: none;
+    border-radius: 9px;
+    padding: 10px 16px;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+  .copy:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .copy[data-done="1"] { background: var(--muted); }
+  .slot-note { font-size: 0.85rem; color: var(--muted); margin: 12px 0 0; }
+  .slot-note strong { color: var(--ink); font-weight: 600; }
+
+  /* ── steps ── */
+  h2 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 700;
+    font-size: 1.35rem;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .steps {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    counter-reset: step;
+  }
+  .step { display: grid; grid-template-columns: 40px 1fr; gap: 16px; align-items: start; }
+  .step-num {
+    counter-increment: step;
+    width: 40px;
+    height: 40px;
+    display: grid;
+    place-items: center;
+    font-family: "Silkscreen", monospace;
+    font-size: 0.95rem;
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-radius: 8px;
+    box-shadow: inset 2px 2px 0 var(--bevel-light), inset -2px -2px 0 var(--bevel-dark);
+  }
+  .step-num::before { content: counter(step); }
+  .step h3 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 600;
+    font-size: 1.1rem;
+    letter-spacing: -0.01em;
+    margin: 4px 0 6px;
+  }
+  .step p { margin: 0; }
+  .step p + p { margin-top: 8px; }
+  .step a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+  .k {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.88em;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .flag {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--warn);
+    background: var(--warn-soft);
+    border-radius: 5px;
+    padding: 1px 7px;
+    margin-left: 2px;
+  }
+
+  /* ── mod page body ── */
+  .page > p.intro { margin: 0; color: var(--muted); font-size: 0.98rem; }
+  .page h4 {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-weight: 600;
+    font-size: 1rem;
+    margin: 0 0 10px;
+  }
+  .block + .block { margin-top: 4px; }
+  .feat-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+  .feat-list li {
+    display: grid;
+    grid-template-columns: 12px 1fr;
+    gap: 10px;
+    font-size: 0.94rem;
+  }
+  .feat-list li::before {
+    content: "";
+    width: 7px;
+    height: 7px;
+    margin-top: 8px;
+    background: var(--accent);
+    border-radius: 2px;
+  }
+  .cmd {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85em;
+    color: var(--ink);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 5px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .src { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--muted); }
+  .src a { color: var(--accent); }
+
+  /* ── in-page sub-tabs ── */
+  .subtabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 4px;
+  }
+  .subtab {
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--muted);
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 6px 14px;
+    cursor: pointer;
+  }
+  .subtab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .subtab[aria-selected="true"] {
+    color: var(--accent-ink);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .subpanel { display: flex; flex-direction: column; gap: 20px; }
+  .loc-tag {
+    display: inline-block;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    border-radius: 5px;
+    padding: 1px 8px;
+    margin-bottom: 8px;
+  }
+
+  /* ── damage table ── */
+  .dmg-table-wrap { overflow-x: auto; }
+  table.dmg {
+    border-collapse: collapse;
+    width: 100%;
+    min-width: 420px;
+    font-size: 0.92rem;
+  }
+  table.dmg th, table.dmg td {
+    text-align: left;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--line);
+    font-variant-numeric: tabular-nums;
+  }
+  table.dmg th {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  table.dmg td:nth-child(2), table.dmg td:nth-child(3),
+  table.dmg th:nth-child(2), table.dmg th:nth-child(3) { text-align: right; }
+  table.dmg tr.hl td { color: var(--accent); font-weight: 600; }
+
+  /* ── diagram ── */
+  .diagram-wrap { overflow-x: auto; }
+  .diagram { display: block; min-width: 600px; }
+  .dbox { fill: var(--surface-2); stroke: var(--line); }
+  .dbox.on { fill: var(--accent-soft); stroke: var(--accent); }
+  .dtext { font-family: "IBM Plex Sans", sans-serif; font-size: 13px; font-weight: 500; fill: var(--ink); }
+  .darrow { stroke: var(--muted); stroke-width: 1.6; fill: none; }
+  .dhead { fill: var(--muted); }
+
+  /* ── help panel ── */
+  .panel {
+    background: var(--warn-soft);
+    border-radius: 14px;
+    padding: 22px 22px 20px;
+  }
+  .panel ul { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .panel li { display: grid; grid-template-columns: 14px 1fr; gap: 10px; font-size: 0.95rem; }
+  .panel li::before { content: ""; width: 8px; height: 8px; margin-top: 8px; background: var(--warn); border-radius: 2px; }
+  .panel li strong { font-weight: 600; }
+  .note { font-size: 0.86rem; color: var(--muted); }
+
+  footer {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 20px 22px 40px;
+    border-top: 1px solid var(--line);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .copy { transition: background-color 0.15s ease; }
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>에그쿠커 마크 서버 설명서</h1>
+  <p class="lede">검 들고 콤보로 몬스터 썰고, 용 사냥하고, 보스 잡으며 장비 맞춰가는 서버.<br />뭐가 있고 어떻게 쓰는지 왼쪽에서 골라보면 됨.</p>
+</div>
+
+<div class="shell">
+  <nav class="sidebar" aria-label="목차">
+    <div class="side-group">
+      <p class="side-label">시작하기</p>
+      <div class="side-links">
+        <button class="side-link" aria-current="page" data-target="install" type="button">설치</button>
+        <button class="side-link" data-target="connect" type="button">접속</button>
+        <button class="side-link" data-target="onboarding" type="button">초반 설정</button>
+      </div>
+    </div>
+    <div class="side-group">
+      <p class="side-label">모드 가이드</p>
+      <div class="side-links">
+        <button class="side-link" data-target="jei" type="button">레시피 찾기</button>
+        <button class="side-link" data-target="roadmap" type="button">진행 목표</button>
+        <button class="side-link" data-target="combat" type="button">전투</button>
+        <button class="side-link" data-target="bosses" type="button">보스</button>
+        <button class="side-link" data-target="creatures" type="button">생물·탐험</button>
+        <button class="side-link" data-target="drawers" type="button">배낭</button>
+        <button class="side-link" data-target="terrain" type="button">지형·구조물</button>
+        <button class="side-link" data-target="way" type="button">Waystones</button>
+      </div>
+    </div>
+    <div class="side-group">
+      <p class="side-label">도움말</p>
+      <div class="side-links">
+        <button class="side-link" data-target="help" type="button">안 될 때</button>
+        <button class="side-link" data-target="modlist" type="button">전체 모드 목록</button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="content">
+
+    <section class="page" id="page-install">
+      <h2>설치</h2>
+      <div class="slot">
+        <p class="slot-label">모드팩 다운로드</p>
+        <!-- 서버지기: 아래 mrpack-link href/텍스트를 실제 GitHub Release URL로 교체 -->
+        <p class="slot-note"><strong>.mrpack</strong> 파일을 여기서 받는다 → <a href="#" id="mrpack-link">mc_server_setup/releases</a>. 서버지기가 만든 것 그대로 받아야 버전이 맞는다.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>Prism Launcher 설치</h3>
+            <p><a href="https://prismlauncher.org" target="_blank" rel="noopener">prismlauncher.org</a> → Download → 본인 OS(Windows/Mac)용 설치</p>
+            <p>기존 마인크래프트 런처는 그대로 둬도 됨. Prism은 모드팩 전용으로 따로 쓰는 런처다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>계정 로그인</h3>
+            <p>Prism 실행 → 설정에서 <strong>기존 마인크래프트(Microsoft) 계정</strong>으로 로그인</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>모드팩 받기 <span class="flag">중요</span></h3>
+            <p>위 <span class="k">모드팩 다운로드</span> 칸의 링크에서 <span class="k">.mrpack</span> 파일을 받는다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>Import</h3>
+            <p>Prism 첫 화면 → <span class="k">Add Instance</span> → <span class="k">Import</span> 탭 → 받은 <span class="k">.mrpack</span> 파일 선택</p>
+            <p>모드가 자동으로 전부 다운로드된다. 창 닫지 말고 기다릴 것 (모드 많아서 몇 분 걸림). 다 끝나면 Prism 목록에 <strong>이 모드팩 아이콘</strong>이 하나 생긴다.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="page" id="page-connect" hidden>
+      <h2>접속</h2>
+      <div class="slot">
+        <p class="slot-label">서버 주소</p>
+        <div class="slot-row">
+          <code class="addr" id="addr">아직-미정.joinmc.link</code>
+          <button class="copy" id="copy" type="button">복사</button>
+        </div>
+        <!-- 서버지기: #addr 텍스트를 playit.gg 주소로 교체 -->
+        <p class="slot-note">서버지기가 공지하는 주소. 설치가 끝났으면 이 주소로 접속하면 된다.</p>
+      </div>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>실행 → 서버 추가</h3>
+            <p>Prism 목록에서 <strong>아까 만든 모드팩 아이콘</strong>을 더블클릭 → <span class="k">멀티플레이</span> → <span class="k">서버 추가</span> → 위의 서버 주소 붙여넣고 저장 → 접속</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="page" id="page-onboarding" hidden>
+      <h2>초반 설정</h2>
+      <p class="intro">접속만 하면 끝이 아니다. 이거 안 해두면 나중에 헷갈린다.</p>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>조작키 충돌부터 정리</h3>
+            <p>옵션 → 조작키 들어가면 <strong>Controlling</strong> 모드가 겹치는 키를 빨갛게 표시해준다. 특히 <strong>JEI의 "레시피 보기"랑 Epic Fight "배틀 모드"가 둘 다 기본 R</strong>이라 겹친다 — JEI 쪽을 F 같은 빈 키로 바꿔둘 것.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>배틀 모드 켜보고 감 잡기</h3>
+            <p>아무 무기나 들고 <span class="cmd">R</span>로 배틀 모드 켜본다. 허수아비든 좀비든 한 대 때려보고 회피(<span class="cmd">Alt</span>)·가드(우클릭) 한 번씩 연습. 자세한 조작은 "전투" 페이지 참고.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>미니맵·줌 확인</h3>
+            <p>화면 구석에 Xaero's 미니맵이 뜨는지 확인. <strong>Just Zoom</strong> 단축키(기본 <span class="cmd">C</span> 계열, 조작키에서 확인)도 한 번 눌러서 원거리 정찰이 되는지 체크.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>첫 거점에 Waystone 설치</h3>
+            <p>스폰 근처나 집 지을 자리에 Waystone 하나 박아두고 이름 지어두기. 나중에 멀리 나갔다 돌아올 때 이게 있어야 편하다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>인벤토리 정리 습관 잡기</h3>
+            <p><strong>Trashslot</strong>으로 잡템 버리는 칸 위치 확인, <strong>Mouse Tweaks</strong>로 쉬프트클릭 이동 감 잡기. 보스 드랍템 쌓이기 시작하면 이거 안 해두면 인벤토리가 금방 터진다.</p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="page" id="page-jei" hidden>
+      <h2>레시피 찾기</h2>
+      <p class="intro">모르면 일단 <span class="cmd">R</span>키. 그게 이 모드팩의 만능 열쇠다.</p>
+
+      <div class="block">
+        <h4>레시피 목록 열기</h4>
+        <ul class="feat-list">
+          <li><span>인벤토리(<span class="cmd">E</span>)를 열면 화면 오른쪽에 <strong>아이템 전체 목록 + 검색창</strong>이 따로 뜬다. 여기서 이름을 치면 원하는 아이템을 찾을 수 있다.</span></li>
+          <li><span>목록에서 별 모양 아이콘을 누르면 <strong>즐겨찾기</strong>로 등록돼서, 자주 찾는 아이템은 검색 없이 바로 보인다.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>"이거 어떻게 만들어?" — 레시피 보기</h4>
+        <ul class="feat-list">
+          <li><span>아이템 위에 마우스를 올리고 <strong>레시피 보기 키</strong>(기본은 보통 <span class="cmd">R</span>)를 누르면 만드는 법이 화면에 뜬다.</span></li>
+          <li><span>재료가 또 다른 조합으로 만들어지는 아이템이면, 그 재료 위에서 다시 <span class="cmd">R</span>을 눌러 계속 파고들 수 있다 (역추적).</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>"이거 어디다 써?" — 활용처 보기</h4>
+        <ul class="feat-list">
+          <li><span>아이템 위에서 <strong>활용처 보기 키</strong>(기본은 보통 <span class="cmd">U</span>)를 누르면, 그 아이템이 들어가는 다른 레시피들을 전부 보여준다.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>Cataclysm 등 특수 아이템도 동일</h4>
+        <ul class="feat-list">
+          <li><span>새로 추가된 재료·장비도 전부 <strong>똑같은 방법(R키)</strong>으로 조회된다. 어느 보스를 잡아야 나오는 재료인지도 같이 표시됨.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>단축키 정리</h4>
+        <ul class="feat-list">
+          <li><span><span class="cmd">R</span> 레시피 보기 · <span class="cmd">U</span> 활용처 보기 · 목록 옆 <span class="cmd">★</span> 즐겨찾기</span></li>
+          <li><span>키 배치가 다르면 옵션 → 조작키 메뉴에서 "JEI" 카테고리 확인. config 파일에서도 바꿀 수 있음</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>키 충돌 주의 <span class="flag">중요</span></h4>
+        <ul class="feat-list">
+          <li><span>이 모드팩엔 <strong>Epic Fight도 R키를 "배틀 모드 켜기"로 쓴다.</strong> JEI 레시피 키랑 겹쳐서 서로 방해될 수 있음.</span></li>
+          <li><span>옵션 → 조작키 → JEI 카테고리에서 <strong>레시피 보기 키를 R 말고 다른 키(예: F)로 변경</strong>해두는 걸 추천. 배틀 모드는 전투 핵심이라 그쪽을 R로 유지하는 게 낫다.</span></li>
+        </ul>
+      </div>
+      <p class="src">더 알아보기: <a href="https://ftb.fandom.com/wiki/JEI" target="_blank" rel="noopener">JEI 사용법 위키</a></p>
+    </section>
+
+    <section class="page" id="page-roadmap" hidden>
+      <h2>진행 목표</h2>
+      <p class="intro">뭐부터 해야 할지 모르겠으면 이 순서대로.</p>
+
+      <ol class="steps">
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>기본기 다지기</h3>
+            <p>초반 설정 끝냈으면, 바닐라 진행대로 <strong>철 → 다이아 장비</strong>까지 맞춘다. 이때 Epic Fight 무기 모션(롱소드·대검 등) 중 취향에 맞는 걸 골라 손에 익힌다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>새 생물·구조물 탐험</h3>
+            <p>Terralith로 넓어진 지형을 돌아다니며 <strong>Alex's Mobs</strong>·던전(When Dungeons Arise, Structory)을 정리한다. 여기서 나오는 스킬북으로 무기를 커스터마이징 시작.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>용·보스급 생물 사냥</h3>
+            <p><strong>Ice and Fire</strong> 드래곤 둥지, <strong>Mowzie's Mobs</strong> 보스들을 하나씩 정리. 다이아 장비 수준에서 감당 가능한 난이도다.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>Cataclysm 보스 진행</h3>
+            <p>"보스" 페이지의 권장 순서대로 <strong>네더라이트 → 중반 → 최종 보스</strong>까지 도전. 잡을 때마다 나오는 장비로 갈아입으면서 다음 보스로.</p>
+          </div>
+        </li>
+        <li class="step">
+          <div class="step-num" aria-hidden="true"></div>
+          <div>
+            <h3>엔드게임</h3>
+            <p>최종 보스 장비까지 맞췄으면 사실상 이 팩의 끝. 이후엔 자유 플레이 — 남은 용 종류 다 모으기, 못 가본 던전 정리, 각자 취향껏.</p>
+          </div>
+        </li>
+      </ol>
+
+      <div class="block">
+        <h4>카테고리별 요약</h4>
+        <ul class="feat-list">
+          <li><span><strong>무기</strong> — Epic Fight 8종 모션(단검~그레이트소드) + 스킬북으로 커스터마이징</span></li>
+          <li><span><strong>방어구</strong> — 별도 강화 시스템 없음, Cataclysm 보스 드랍 장비로 티어업</span></li>
+          <li><span><strong>구조물</strong> — When Dungeons Arise·Structory 던전, Ice and Fire 진영 캠프, Cataclysm 보스 던전</span></li>
+          <li><span><strong>몬스터</strong> — Alex's Mobs(일반 생물), Ice and Fire(용·키클롭스·고르곤 등)</span></li>
+          <li><span><strong>보스</strong> — Cataclysm 8종(티어 진행), Mowzie's Mobs(개별 보스), Ice and Fire 드래곤</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="page" id="page-combat" hidden>
+      <h2>전투</h2>
+      <p class="intro">클릭 한 번이 아니라 콤보다. 배틀 모드부터 켜고 시작할 것.</p>
+
+      <div class="subtabs" role="tablist" aria-label="전투 세부 안내">
+        <button class="subtab" role="tab" aria-selected="true" data-sub="cb-control" type="button">조작</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="cb-weapon" type="button">무기 종류</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="cb-skill" type="button">스킬북</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="cb-dmg" type="button">데미지 비교</button>
+      </div>
+
+      <div class="subpanel" data-sub="cb-control">
+        <div class="block">
+          <h4>배틀 모드 켜기</h4>
+          <ul class="feat-list">
+            <li><span><span class="cmd">R</span>키로 <strong>배틀 모드</strong> 진입/해제. 배틀 모드일 때만 콤보·회피·가드가 작동한다 — 안 켜져 있으면 그냥 바닐라 공격이랑 똑같아 보임.</span></li>
+            <li><span><strong>주의</strong>: JEI의 "레시피 보기"도 기본 R키다. 겹쳐서 헷갈리면 JEI 쪽 키를 바꿀 것 (레시피 찾기 페이지 참고).</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>기본 조작</h4>
+          <ul class="feat-list">
+            <li><span><strong>일반 공격</strong> — 평소 공격 입력. 무기 종류(검·창·대검 등)마다 콤보 모션이 다르다.</span></li>
+            <li><span><strong>대시 공격</strong> — 달리면서 공격 입력.</span></li>
+            <li><span><strong>강공격</strong> — 공격 입력을 짧게 눌렀다 떼지 말고 <strong>살짝 더 오래 누르고 있으면</strong> 발동.</span></li>
+            <li><span><strong>회피</strong> — 기본 <span class="cmd">Alt</span>. 이동 방향 쪽으로 구른다. 웅크리기+방향키 조합으로도 됨.</span></li>
+            <li><span><strong>가드</strong> — 기본 <strong>마우스 우클릭</strong>(아이템 사용 키)으로 막기.</span></li>
+            <li><span>회피·가드·무기 고유 스킬·락온(적 자동 조준) 전부 옵션 → 조작키에서 따로 키를 바꿀 수 있다.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subpanel" data-sub="cb-weapon" hidden>
+        <div class="block">
+          <h4>무기 종류 (8종 모션)</h4>
+          <ul class="feat-list">
+            <li><span>새 무기를 추가하는 게 아니라, <strong>들고 있는 무기에 따라 전용 모션</strong>이 붙는 방식이다: 단검·숏소드·롱소드·도끼·창(스피어)·대검(그레이트소드)·타치·우치가타나.</span></li>
+            <li><span>예를 들어 <strong>롱소드</strong>는 균형 잡힌 속도로 최대 3명 동시 타격, 방어 자세로 정면 공격을 흘려내는 고유기가 있다. <strong>타치</strong>는 연속 공격할수록 추가타가 쌓이는 고유기.</span></li>
+            <li><span><strong>창(spear)</strong>은 데미지 대신 사거리를 챙기는 무기 — 보조손에 뭘 드냐에 따라 운용이 달라짐.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>조합법</h4>
+          <ul class="feat-list">
+            <li><span><strong>롱소드</strong> = 같은 재질의 <strong>검 1개 + 주괴 2개</strong>. 예: 철검 1개 + 철주괴 2개 → 철 롱소드. 재질(나무~네더라이트)마다 똑같은 공식.</span></li>
+            <li><span>도끼·창·단검·숏소드·대검도 <strong>바닐라 도구/재료를 베이스로 조합대에서 만드는 방식</strong>이라 크게 어렵지 않다. 정확한 배치는 <strong>JEI에서 무기 이름 검색 후 R키</strong>로 바로 확인 가능.</span></li>
+            <li><span><strong>타치·우치가타나</strong>는 조합대로 못 만든다. 우치가타나는 <strong>사막·정글 신전 전용 드랍템</strong>이고, 타치도 특수 입수 경로를 가진 무기라 던전을 돌다가 줍는 개념으로 접근할 것.</span></li>
+            <li><span>네더라이트 등급은 다른 장비처럼 <strong>제련대(스미딩 테이블)</strong>에서 다이아 무기 + 네더라이트 주괴로 업그레이드.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subpanel" data-sub="cb-skill" hidden>
+        <div class="block">
+          <h4>강화는 스킬북으로 — 방어구 강화는 없음</h4>
+          <ul class="feat-list">
+            <li><span>Epic Fight 자체엔 <strong>방어구를 강화하는 기능이 없다.</strong> 이 모드가 손대는 건 오직 "전투 방식"이다.</span></li>
+            <li><span>몹을 잡다 보면 <strong>스킬북</strong>이 나오고, 이걸 무기에 장착하면 패시브/액티브 능력이 붙는다. 같은 롱소드라도 낀 스킬에 따라 완전히 다르게 운용됨 — 이게 사실상의 "강화" 방식.</span></li>
+            <li><span>진짜 장비 티어(더 센 무기·방어구 자체)는 <strong>보스(Cataclysm) 페이지</strong>에서 다루는 보스 드랍템이 담당한다.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>스킬북은 어디서 나오나</h4>
+          <ul class="feat-list">
+            <li><span><strong>몬스터를 잡으면 드랍</strong>되기도 하고, <strong>사막 신전·정글 신전</strong> 같은 바닐라 구조물 상자에서도 나온다.</span></li>
+            <li><span>그 외 <strong>부서진 포탈, 폐광, 성채(마을 성), 고대 도시</strong> 상자에서도 나올 수 있다.</span></li>
+            <li><span>초반엔 아무 던전이나 털면서, 몹 잡으면서 자연스럽게 몇 개씩 모이는 편 — 일부러 파밍 루트를 짤 필요까진 없음.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>스킬북 배우는 법 <span class="flag">중요</span></h4>
+          <ul class="feat-list">
+            <li><span>그냥 무기에 "장착"하는 게 아니라 <strong>배우는(consume) 개념</strong>이다. 스킬북을 인벤토리에 넣은 채로 <strong>스킬 에디터(Skill Editor)</strong>를 열고, 빈 슬롯을 골라 "배우기"를 누르면 된다.</span></li>
+            <li><span>서바이벌 모드에서는 배우는 순간 <strong>책이 소모</strong>된다 — 한 번 배우면 그 능력은 계속 갖고 있게 됨(무기를 바꿔도 유지).</span></li>
+            <li><span>스킬은 <strong>배틀 모드 상태에서만</strong> 쓸 수 있고, 대부분 <strong>스태미나를 소모</strong>한다 — 스태미나 없으면 발동 안 됨.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>무기 고유기(이너레이트 스킬) 쓰는 법</h4>
+          <ul class="feat-list">
+            <li><span>스킬북이랑 별개로, <strong>무기마다 기본으로 딸린 고유기</strong>가 있다 (예: 롱소드의 방어 자세, 타치의 추가타).</span></li>
+            <li><span>적을 때릴 때마다 화면의 <strong>무기 차지 게이지</strong>가 차오르고, 다 차면 <strong>무기 고유기 키(기본 좌클릭)</strong>로 발동한다.</span></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="subpanel" data-sub="cb-dmg" hidden>
+        <div class="block">
+          <h4>무기 데미지 감 잡기 (체력 10칸 기준)</h4>
+          <div class="dmg-table-wrap">
+            <table class="dmg">
+              <thead><tr><th>무기</th><th>데미지</th><th>하트</th></tr></thead>
+              <tbody>
+                <tr><td>바닐라 다이아몬드 검</td><td>7</td><td>3.5칸</td></tr>
+                <tr><td>다이아 롱소드·타치 (1타)</td><td>8</td><td>4칸</td></tr>
+                <tr><td>네더라이트 우치가타나 (1타)</td><td>10</td><td>5칸</td></tr>
+                <tr class="hl"><td>다이아 그레이트소드 (1타)</td><td>15</td><td>7.5칸</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <ul class="feat-list">
+            <li><span>대검(그레이트소드)이 확실히 세지만 느리다. 단검·숏소드·도끼·창은 정확한 수치를 못 찾았다 — <strong>설치 후 JEI로 검색하면 정확한 데미지가 뜬다.</strong></span></li>
+          </ul>
+        </div>
+      </div>
+
+      <p class="src">Epic Fight 제공 · 더 알아보기: <a href="https://epicfight-docs.readthedocs.io" target="_blank" rel="noopener">공식 문서</a></p>
+      <p class="src">호환 애드온: <strong>Epic Fight & Other Mods Weapons Compat</strong>(Cataclysm·Ice and Fire 무기에 정식 모션 적용, 검증됨) · <strong>Epic Fight x Better Lock On</strong>(카메라·락온 보정, Epic Fight 전용 제작)</p>
+    </section>
+
+    <section class="page" id="page-bosses" hidden>
+      <h2>보스</h2>
+      <p class="intro">테라리아처럼 보스 잡을 때마다 확실히 강해진다. 순서 지켜서 도전할 것.</p>
+
+      <div class="subtabs" role="tablist" aria-label="보스 세부 안내">
+        <button class="subtab" role="tab" aria-selected="true" data-sub="boss-order" type="button">진행 순서</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="boss-loc" type="button">보스별 위치</button>
+      </div>
+
+      <div class="subpanel" data-sub="boss-order">
+        <div class="block">
+          <h4>권장 도전 순서</h4>
+          <div class="diagram-wrap">
+            <svg class="diagram" viewBox="0 0 700 110" role="img" aria-label="다이아 장비부터 네더라이트 몬스트로시티, 하버인저, 리바이어던, 이그니스 순으로 이어지는 보스 도전 순서 다이어그램">
+              <defs>
+                <marker id="dArrow2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path d="M0,0 L8,4 L0,8 Z" class="dhead" />
+                </marker>
+              </defs>
+              <path class="darrow" marker-end="url(#dArrow2)" d="M162,55 L196,55" />
+              <path class="darrow" marker-end="url(#dArrow2)" d="M342,55 L376,55" />
+              <path class="darrow" marker-end="url(#dArrow2)" d="M522,55 L556,55" />
+              <rect class="dbox" x="20" y="23" width="142" height="64" rx="10" />
+              <text class="dtext" x="91" y="50" text-anchor="middle">다이아 장비</text>
+              <text class="dtext" x="91" y="70" text-anchor="middle" opacity="0.7" font-size="11">던전 미니보스</text>
+              <rect class="dbox" x="200" y="23" width="142" height="64" rx="10" />
+              <text class="dtext" x="271" y="50" text-anchor="middle">네더라이트</text>
+              <text class="dtext" x="271" y="70" text-anchor="middle" opacity="0.7" font-size="11">몬스트로시티·엔더가디언</text>
+              <rect class="dbox" x="380" y="23" width="142" height="64" rx="10" />
+              <text class="dtext" x="451" y="50" text-anchor="middle">중반</text>
+              <text class="dtext" x="451" y="70" text-anchor="middle" opacity="0.7" font-size="11">하버인저·리바이어던</text>
+              <rect class="dbox on" x="560" y="23" width="120" height="64" rx="10" />
+              <text class="dtext" x="620" y="50" text-anchor="middle">최종</text>
+              <text class="dtext" x="620" y="70" text-anchor="middle" opacity="0.7" font-size="11">이그니스 등</text>
+            </svg>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li><span>보스 8종은 각자 다른 던전/구조물에 있고, <strong>장비 티어에 맞춰 순서대로 도전</strong>하는 걸 권장한다. 너무 일찍 만나면 그냥 압살당함.</span></li>
+          <li><span>모든 보스는 낙사·독·불 데미지에 면역이다 — 함정 파서 잡는 꼼수는 안 통함, 정면승부 필요.</span></li>
+          <li><span>보스마다 전용 장비·재료를 드랍하고, 그게 다음 보스를 잡기 위한 장비가 된다 — 이게 테라리아식 진행 루프.</span></li>
+        </ul>
+      </div>
+
+      <div class="subpanel" data-sub="boss-loc" hidden>
+        <div class="block">
+          <h4><span class="loc-tag">네더</span> 네더라이트 몬스트로시티</h4>
+          <ul class="feat-list">
+            <li><span><strong>소울 포지(Soul Forge)</strong> 구조물 안쪽, 소울파이어 속에 잠들어 있다. 가까이 다가가면 깨어남.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4><span class="loc-tag">네더</span> 이그니스</h4>
+          <ul class="feat-list">
+            <li><span><strong>버닝 아레나(Burning Arena)</strong>라는 희귀 구조물이 네더 황무지 바이옴에 드물게 생성된다. 소울 포지 반경 30청크 안엔 안 생김.</span></li>
+            <li><span>아레나 위층의 <strong>화염 제단(Altar of Fire)</strong>에 "타는 재(Burning Ashes)"를 올려두면 이그니스가 소환된다.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4><span class="loc-tag">오버월드</span> 하버인저(Harbinger)</h4>
+          <ul class="feat-list">
+            <li><span>오버월드 쪽 첫 관문 보스. 기계식 위더 형태 발판 구조물로 존재하며, <strong>네더의 별(Nether Star)</strong>을 넣어 동력을 공급해야 전투가 시작된다.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>구조물 찾는 법</h4>
+          <ul class="feat-list">
+            <li><span><strong>Explorer's Compass</strong>(이미 설치돼 있음)로 해당 구조물을 지정해서 찾거나, 각 구조물 전용 "탐지 아이템"을 엔더의 눈처럼 던져서 위치를 추적할 수 있다.</span></li>
+          </ul>
+        </div>
+        <p class="src">나머지 보스(리바이어던·고대잔재·스킬라·말레딕투스·엔더가디언) 위치는 <a href="https://lendercataclysm.wiki.gg/wiki/Bosses" target="_blank" rel="noopener">공식 위키 보스 목록</a>에서 확인.</p>
+      </div>
+
+      <p class="src">L_Ender's Cataclysm 제공 · 더 알아보기: <a href="https://lendercataclysm.wiki.gg" target="_blank" rel="noopener">공식 위키</a> (보스별 공략 다 있음)</p>
+    </section>
+
+    <section class="page" id="page-drawers" hidden>
+      <h2>배낭</h2>
+      <p class="intro">인벤토리 칸 모자라면 등에 하나 메면 된다.</p>
+
+      <div class="block">
+        <h4>기본 개념</h4>
+        <ul class="feat-list">
+          <li><span>한마디로 <strong>등에 메는 추가 인벤토리</strong>다. 만들어서 착용하면 그만큼 소지할 수 있는 칸이 늘어난다.</span></li>
+          <li><span>등에 멘 채로 <strong>Shift+우클릭</strong>하면 바로 열려서 확인할 수 있다. 일부 등급은 그 자리에서 <strong>휴대용 작업대</strong>로도 쓸 수 있다.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>1단계 — 가죽(Leather) 배낭 만들기</h4>
+        <ul class="feat-list">
+          <li><span>재료: <strong>가죽 4개 + 실 1개 + 백팩 탱크 2개 + 나무 상자 1개 + 침낭 1개.</strong> 모양 배치: 네 모서리에 가죽, 위쪽 가운데 실, 가운데 줄 좌우에 탱크, 정중앙에 상자, 아래 가운데 침낭.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>등급 올리기 — 가죽 → 철 → 금 → 다이아 → 네더라이트</h4>
+        <ul class="feat-list">
+          <li><span><strong>블랭크 업그레이드</strong>부터 만든다: 가죽 1개를 실 4개로 둘러싸면 블랭크 업그레이드 4개가 나옴 (네더라이트까지 가는 데 이 정도면 충분).</span></li>
+          <li><span>철·금·다이아 업그레이드는 전부 같은 모양: <strong>블랭크 업그레이드 1개(중앙) + 해당 재료 8개</strong>로 조합.</span></li>
+          <li><span>네더라이트 업그레이드는 <strong>제련대(스미딩 테이블)</strong>에서 네더라이트 업그레이드 틀 + 블랭크 업그레이드 + 네더라이트 주괴로 만듦.</span></li>
+          <li><span>등급이 오를수록 <strong>칸 수·액체 탱크 용량(3버킷→11버킷)·낄 수 있는 기능성 업그레이드 개수(2개→6개)</strong>가 전부 늘어난다.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>재료별 생김새·능력</h4>
+        <ul class="feat-list">
+          <li><span>가죽·오징어 먹물주머니·용 비늘 등 <strong>특수 재료로도 별도 배낭을 만들 수 있다</strong> — 겉모습이 그 재료 테마로 바뀌고, 종류에 따라 고유 패시브 능력이 붙는다.</span></li>
+        </ul>
+      </div>
+      <p class="src">Traveler's Backpack 더 알아보기: <a href="https://github.com/Tiviacz1337/Travelers-Backpack/wiki/Crafting-Recipes" target="_blank" rel="noopener">공식 조합법 위키</a></p>
+    </section>
+
+    <section class="page" id="page-terrain" hidden>
+      <h2>지형·구조물</h2>
+      <p class="intro">같은 마인크래프트 맞나 싶을 정도로 땅이 달라졌다.</p>
+      <div class="block">
+        <h4>지형 대격변</h4>
+        <ul class="feat-list">
+          <li><span><strong>Terralith</strong> — 오버월드에 새 바이옴 100개 이상 추가. 협곡·설산·사바나 절벽처럼 훨씬 극적인 지형이 자연스럽게 섞여서 생성된다.</span></li>
+          <li><span><strong>Incendium</strong> — 네더 버전. 새로운 네더 바이옴과 구조물이 생긴다.</span></li>
+          <li><span><strong>Nullscape</strong> — 엔드 버전. 밋밋하던 엔드가 탐험할 맛 나게 바뀐다.</span></li>
+          <li><span>셋 다 뒤에서 <strong>Terrablender</strong>라는 모드가 서로 안 겹치게 조율해준다 — 신경 쓸 것 없이 그냥 켜져 있으면 됨.</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>던전·폐허</h4>
+        <ul class="feat-list">
+          <li><span><strong>When Dungeons Arise</strong> — 새로운 던전·요새 구조물을 대거 추가. 탐험할 곳이 훨씬 많아짐.</span></li>
+          <li><span><strong>Structory / Structory: Towers</strong> — Terralith랑 같은 제작사(Stardust Labs)라 지형에 자연스럽게 녹아드는 폐허·탑을 뿌려준다.</span></li>
+        </ul>
+      </div>
+      <p class="src">Terralith · Incendium · Nullscape · Terrablender 제공 · 더 알아보기: <a href="https://www.stardustlabs.net/terralith" target="_blank" rel="noopener">Terralith 공식 사이트</a> (바이옴 사진 구경 가능)</p>
+    </section>
+
+    <section class="page" id="page-creatures" hidden>
+      <h2>생물·탐험</h2>
+      <p class="intro">돌아다니다 용을 만나면 도망치지 말고 일단 둥지부터 찾아봐라.</p>
+
+      <div class="subtabs" role="tablist" aria-label="생물 모드 선택">
+        <button class="subtab" role="tab" aria-selected="true" data-sub="cr-alex" type="button">Alex's Mobs</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="cr-iaf" type="button">Ice and Fire</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="cr-mowzie" type="button">Mowzie's Mobs</button>
+      </div>
+
+      <div class="subpanel" data-sub="cr-alex">
+        <div class="block">
+          <h4>개요</h4>
+          <ul class="feat-list">
+            <li><span>순한 것부터 위협적인 것까지 새로운 생물이 대거 추가된다. 바이옴 곳곳에 자연스럽게 섞여서 등장.</span></li>
+          </ul>
+        </div>
+        <p class="src">더 알아보기: <a href="https://modrinth.com/mod/alexsmobs" target="_blank" rel="noopener">Modrinth 페이지</a></p>
+      </div>
+
+      <div class="subpanel" data-sub="cr-iaf" hidden>
+        <div class="block">
+          <h4>둥지 위치</h4>
+          <ul class="feat-list">
+            <li><span><span class="loc-tag">더운 지형</span> <strong>불의 용</strong> 둥지(Roost)</span></li>
+            <li><span><span class="loc-tag">추운 지형</span> <strong>얼음 용</strong> 둥지(Roost)</span></li>
+            <li><span>그 외 키클롭스 야영지, 히포그리프(순한 편), 고르곤(마주치면 석화 주의), 트롤, 미르멕스(개미 부족) 등 진영별 구조물이 흩어져 있다.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>알 부화시키기</h4>
+          <ul class="feat-list">
+            <li><span>용마다 부화 방법이 다르다: <strong>불의 용 알은 불·용암에, 얼음 용 알은 물에</strong> 넣어둔다. 알이 움직이기 시작하면 몇 분 뒤 부화.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>길들이기·키우기</h4>
+          <ul class="feat-list">
+            <li><span>부화 직후엔 아직 길들여지지 않은 상태 — <strong>불의 용은 구운 닭고기, 얼음 용은 생선</strong>을 먹여서 길들인다.</span></li>
+            <li><span>뼈+아무 생고기를 번갈아 조합하면 <strong>드래곤 사료</strong>가 나오는데, 먹이면 성장이 빨라진다.</span></li>
+            <li><span>성장 5단계 중 <strong>3단계부터 탈 수 있고</strong>, 5단계(성체)는 체력 500에 갑옷까지 장착 가능한 완전체가 된다.</span></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h4>장비</h4>
+          <ul class="feat-list">
+            <li><span>용 비늘·뼈로 갑옷·무기를 만들 수 있다. 불의 용 갑옷은 화염 면역 같은 효과가 붙는다.</span></li>
+          </ul>
+        </div>
+        <p class="src">더 알아보기: <a href="https://ice-and-fire-mod.fandom.com/wiki/Ice_and_Fire_Mod_Wiki" target="_blank" rel="noopener">공식 위키</a> · <a href="https://ice-and-fire-mod.fandom.com/wiki/Dragon_Egg" target="_blank" rel="noopener">드래곤 알 상세</a></p>
+      </div>
+
+      <div class="subpanel" data-sub="cr-mowzie" hidden>
+        <div class="block">
+          <h4>위치별 보스</h4>
+          <ul class="feat-list">
+            <li><span><span class="loc-tag">눈밭</span> <strong>프로스트모</strong> — 추운 지형(설원 평원 등)에서 등장</span></li>
+            <li><span><span class="loc-tag">지하</span> <strong>강철거인(Ferrous Wroughtnaut)</strong> — 오버월드 아무 바이옴이든 지하(Y20~50) "로트 챔버" 구조물 안에 잠들어 있음</span></li>
+            <li><span><span class="loc-tag">사바나</span> <strong>움부타나 부족</strong> — 사바나·아카시아 바이옴의 "움부타나 그로브" 구조물</span></li>
+          </ul>
+        </div>
+        <ul class="feat-list">
+          <li><span>Cataclysm 보스랑 겹치지 않는 별개 목록이라, 보스 도전 순서 사이사이 잡을 거리로 딱 좋다.</span></li>
+        </ul>
+        <p class="src">더 알아보기: <a href="https://mowziesmobs.fandom.com/wiki/" target="_blank" rel="noopener">공식 위키</a></p>
+      </div>
+
+      <div class="block">
+        <h4>낯선 생물 만났을 때</h4>
+        <ul class="feat-list">
+          <li><span><strong>Jade</strong>는 마우스로 가리키는 블록·몹의 정보를 화면 한쪽에 자동으로 띄워주는 모드다. 따로 열 필요 없이 그냥 쳐다보기만 하면 됨.</span></li>
+          <li><span>새 생물 위에 마우스를 갖다 대면 이름·체력이 바로 뜬다. 위협적인지 아닌지부터 확인하고 접근할 것.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="page" id="page-way" hidden>
+      <h2>Waystones</h2>
+      <p class="intro">이제 걸어다닐 필요 없다. 돌 하나면 끝난다.</p>
+
+      <div class="subtabs" role="tablist" aria-label="Waystones 하위 안내">
+        <button class="subtab" role="tab" aria-selected="true" data-sub="way-overview" type="button">개요</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="way-recipe" type="button">조합법</button>
+        <button class="subtab" role="tab" aria-selected="false" data-sub="way-usage" type="button">쓰는 법</button>
+      </div>
+
+      <div class="subpanel" data-sub="way-overview">
+        <ul class="feat-list">
+          <li><span>돌로 된 <strong>순간이동 표지석 블록</strong>이다. 이걸 바닥에 놓으면 그 자리가 "이동 가능한 지점"으로 등록된다.</span></li>
+          <li><span>거점(집, 광산 입구, 마을 등)마다 하나씩 박아두면 사실상 지도 전체가 순간이동으로 연결된다.</span></li>
+        </ul>
+      </div>
+
+      <div class="subpanel" data-sub="way-recipe" hidden>
+        <h4>1단계 — 워프스톤(Warp Stone)</h4>
+        <ul class="feat-list">
+          <li><span>재료: <strong>엔더펄 4개 + 보라색 염료 4개 + 에메랄드 1개</strong>. 이게 웨이스톤 제작의 핵심 재료.</span></li>
+        </ul>
+        <h4>2단계 — 웨이스톤 블록</h4>
+        <ul class="feat-list">
+          <li><span>재료: <strong>돌벽돌 3개 + 흑요석 3개 + 워프스톤 1개.</strong> 완성하면 바닥에 놓을 수 있는 웨이스톤 블록이 나온다.</span></li>
+          <li><span>버전에 따라 재료가 살짝 다를 수 있어서, 안 맞으면 <strong>JEI에서 "Waystone" 검색 후 R키</strong>로 정확한 배합 재확인.</span></li>
+        </ul>
+      </div>
+
+      <div class="subpanel" data-sub="way-usage" hidden>
+        <ul class="feat-list">
+          <li><span>웨이스톤을 바닥에 놓고 <strong>우클릭</strong>하면, 지금까지 발견한 다른 웨이스톤들이 목록으로 뜬다. 골라서 이동.</span></li>
+          <li><span>처음 이름을 지어두면(간판처럼) 목록에서 헷갈리지 않고 찾기 편하다.</span></li>
+        </ul>
+      </div>
+
+      <p class="src">Waystones 더 알아보기: <a href="https://modrinth.com/mod/waystones" target="_blank" rel="noopener">Modrinth 페이지</a></p>
+    </section>
+
+    <section class="page" id="page-help" hidden>
+      <h2>안 될 때</h2>
+      <div class="panel">
+        <ul>
+          <li><span><strong>접속이 안 된다</strong> → 모드팩 버전이 서버지기가 올린 것과 다를 확률이 높다. .mrpack을 새로 받아서 다시 import.</span></li>
+          <li><span><strong>Import한 인스턴스가 실행 자체가 안 된다</strong> → Prism의 인스턴스 설정에서 자바 버전이 자동으로 안 맞았을 수 있음. "Java 자동 감지" 다시 실행.</span></li>
+          <li><span><strong>서버가 목록에 회색으로 뜬다</strong> → 서버지기 PC가 꺼져 있거나 playit이 꺼진 상태.</span></li>
+          <li><span><strong>공격이 그냥 바닐라처럼 나간다(콤보 안 됨)</strong> → 배틀 모드가 꺼져 있는 상태. <span class="cmd">R</span>키로 켤 것.</span></li>
+          <li><span><strong>렉이 심하다</strong> → 보스전이나 몹이 몰린 지역일 확률이 높음. 서버지기한테 알리면 원인 찾아서 정리함.</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="page" id="page-modlist" hidden>
+      <h2>전체 모드 목록</h2>
+      <p class="intro">이 서버에 뭐가 깔려있는지 궁금하면 여기서 전부 확인.</p>
+
+      <div class="block">
+        <h4>전투 · RPG — 코어</h4>
+        <ul class="feat-list">
+          <li><span><strong>Epic Fight</strong> — 콤보·회피·가드 있는 액션 전투 시스템 + 스킬 성장</span></li>
+          <li><span><strong>Epic Fight & Other Mods Weapons Compat</strong> — Cataclysm·Ice and Fire 무기에 정식 Epic Fight 모션 적용 (검증된 호환 애드온)</span></li>
+          <li><span><strong>Epic Fight x Better Lock On</strong> — 카메라·락온 보정용 Epic Fight 전용 애드온</span></li>
+          <li><span><strong>L_Ender's Cataclysm</strong> — 테라리아식 보스 8종 + 티어별 진행</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>배낭</h4>
+        <ul class="feat-list">
+          <li><span><strong>Traveler's Backpack</strong> — 등에 메는 인벤토리 확장 가방</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>지형·구조물</h4>
+        <ul class="feat-list">
+          <li><span><strong>Terrablender</strong> — 지형 모드끼리 충돌 안 나게 조율 (필수 의존 모드)</span></li>
+          <li><span><strong>Terralith</strong> — 오버월드에 새 바이옴 100개 이상 추가</span></li>
+          <li><span><strong>Incendium</strong> — 네더 바이옴 대격변</span></li>
+          <li><span><strong>Nullscape</strong> — 엔드 바이옴 대격변</span></li>
+          <li><span><strong>When Dungeons Arise</strong> — 새 던전·요새 구조물 추가</span></li>
+          <li><span><strong>Structory / Structory: Towers</strong> — 폐허·탑 구조물 추가</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>생물</h4>
+        <ul class="feat-list">
+          <li><span><strong>Alex's Mobs</strong> — 새로운 생물 대거 추가</span></li>
+          <li><span><strong>Ice and Fire: Dragons</strong> — 용·키클롭스 등 판타지 생물 + 탈것</span></li>
+          <li><span><strong>Mowzie's Mobs</strong> — 개성 강한 소규모 보스급 생물들</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>편의 · QoL</h4>
+        <ul class="feat-list">
+          <li><span><strong>JEI</strong> — 레시피 조회</span></li>
+          <li><span><strong>ImmediatelyFast</strong> — 렌더링 최적화(FPS 향상)</span></li>
+          <li><span><strong>Mouse Tweaks</strong> — 인벤토리 편의(쉬프트클릭으로 여러 칸 이동)</span></li>
+          <li><span><strong>AppleSkin</strong> — 허기·포화도 수치 표시</span></li>
+          <li><span><strong>Jade</strong> — 보고 있는 블록·몹 정보 자동 표시</span></li>
+          <li><span><strong>Explorer's Compass</strong> — 특정 구조물 방향 안내</span></li>
+          <li><span><strong>Waystones</strong> — 순간이동 앵커 블록</span></li>
+          <li><span><strong>Xaero's Minimap</strong> — 인게임 미니맵</span></li>
+          <li><span><strong>Xaero's World Map</strong> — 확대해서 보는 전체 지도</span></li>
+          <li><span><strong>Controlling</strong> — 조작키 충돌을 화면에서 바로 알려줌</span></li>
+          <li><span><strong>Corpse</strong> — 죽은 자리를 나침반처럼 계속 안내</span></li>
+          <li><span><strong>Clumps</strong> — 경험치 구슬을 하나로 합쳐서 렉 방지</span></li>
+          <li><span><strong>Neat</strong> — 몹 머리 위 체력바 표시</span></li>
+          <li><span><strong>Just Zoom</strong> — 단축키로 화면 확대(정찰용)</span></li>
+          <li><span><strong>Trashslot</strong> — 인벤토리 전용 쓰레기통 칸</span></li>
+        </ul>
+      </div>
+      <div class="block">
+        <h4>서버 성능 (플레이 화면엔 안 보임)</h4>
+        <ul class="feat-list">
+          <li><span><strong>FerriteCore</strong> — 메모리 사용량 최적화</span></li>
+          <li><span><strong>ModernFix</strong> — 구동 속도·메모리 최적화</span></li>
+          <li><span><strong>spark</strong> — 성능 프로파일러 (렉 원인 진단용)</span></li>
+          <li><span><strong>Chunky</strong> — 청크 미리생성 (탐험 중 렉 방지)</span></li>
+        </ul>
+      </div>
+    </section>
+  </main>
+</div>
+
+<footer>
+  <span>친구 전용 안내문</span>
+  <span>관리: 서버지기</span>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById("copy");
+    var addr = document.getElementById("addr");
+    if (!btn || !addr) return;
+    btn.addEventListener("click", function () {
+      var text = (addr.textContent || "").trim();
+      var done = function () {
+        btn.textContent = "복사됨";
+        btn.dataset.done = "1";
+        setTimeout(function () {
+          btn.textContent = "복사";
+          btn.dataset.done = "";
+        }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done).catch(done);
+      } else {
+        var r = document.createRange();
+        r.selectNode(addr);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+        try { document.execCommand("copy"); } catch (e) {}
+        s.removeAllRanges();
+        done();
+      }
+    });
+  })();
+
+  (function () {
+    document.querySelectorAll(".subtabs").forEach(function (bar) {
+      var container = bar.parentElement;
+      var btns = bar.querySelectorAll(".subtab");
+      var panels = container.querySelectorAll(".subpanel");
+      btns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          btns.forEach(function (b) { b.setAttribute("aria-selected", "false"); });
+          panels.forEach(function (p) { p.hidden = true; });
+          btn.setAttribute("aria-selected", "true");
+          var target = container.querySelector('.subpanel[data-sub="' + btn.dataset.sub + '"]');
+          if (target) target.hidden = false;
+        });
+      });
+    });
+  })();
+
+  (function () {
+    var links = document.querySelectorAll(".side-link");
+    var pages = document.querySelectorAll(".page");
+    links.forEach(function (link) {
+      link.addEventListener("click", function () {
+        links.forEach(function (l) { l.removeAttribute("aria-current"); });
+        pages.forEach(function (p) { p.hidden = true; });
+        link.setAttribute("aria-current", "page");
+        var target = document.getElementById("page-" + link.dataset.target);
+        if (target) target.hidden = false;
+        window.scrollTo({ top: 0, behavior: "instant" });
+      });
+    });
+  })();
+</script>
+</body>
+</html>
